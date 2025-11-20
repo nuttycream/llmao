@@ -44,15 +44,15 @@
         cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       in {
         packages = let
-          gai = craneLib.buildPackage (
+          llmao = craneLib.buildPackage (
             commonArgs
             // {
               inherit cargoArtifacts src;
             }
           );
         in {
-          inherit gai;
-          default = gai;
+          inherit llmao;
+          default = llmao;
         };
 
         devShells.default = let
