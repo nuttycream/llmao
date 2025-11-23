@@ -1,6 +1,13 @@
 [package]
 name = "llmao"
-version = "0.1.0"
+description = "Large Language Model API Ops, an abstraction layer for interfacing with different LLM providers"
+version = "0.0.1"
 edition = "2024"
+readme = "README.md"
+license-file = "LICENSE"
+homepage = "https://github.com/nuttycream/llmao"
+repository = "https://github.com/nuttycream/llmao"
+keywords = ["llm", "ai"]
+
 
 [dependencies]
