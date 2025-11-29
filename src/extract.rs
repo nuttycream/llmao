@@ -21,11 +21,21 @@ pub enum ErrorKind {
 }
 
 impl std::fmt::Display for ErrorKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         match self {
-            ErrorKind::NoData => write!(f, "No data extracted"),
-            ErrorKind::DeserializationFailed => write!(f, "Failed to deserialize data"),
-            ErrorKind::BadSchema => write!(f, "Response violated schema constraints"),
+            ErrorKind::NoData => {
+                write!(f, "No data extracted")
+            }
+            ErrorKind::DeserializationFailed => {
+                write!(f, "Failed to deserialize data")
+            }
+            ErrorKind::BadSchema => write!(
+                f,
+                "Response violated schema constraints"
+            ),
         }
     }
 }
@@ -37,7 +47,7 @@ impl Error for ErrorKind {
     }
 }
 
-/// Extraction eerror type trait.
+/// Extraction error type trait.
 ///
 /// This just defines the error type, to be used by the other traits.
 pub trait ErrorType {
@@ -49,6 +59,8 @@ impl<T: ErrorType + ?Sized> ErrorType for &mut T {
     type Error = T::Error;
 }
 
-// todo impl extract
-// decide whether or not, we should have
-// serde for deserialization generic
+/// Extraction trait
+pub trait Extract<T>: ErrorType {
+    /// Extract data into the deserializable generic T
+    fn extract(&mut self) -> Result<T, Self::Error>;
+}
