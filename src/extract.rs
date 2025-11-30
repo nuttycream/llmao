@@ -1,3 +1,5 @@
+use crate::Provider;
+
 pub trait Error: std::fmt::Debug {
     fn kind(&self) -> ErrorKind;
 }
@@ -47,20 +49,31 @@ impl Error for ErrorKind {
     }
 }
 
-/// Extraction error type trait.
+/// The Extraction trait
+/// # Examples
 ///
-/// This just defines the error type, to be used by the other traits.
-pub trait ErrorType {
-    /// Error type
-    type Error: Error;
+/// See the [example](https://github.com/nuttycream/llmao/blob/main/examples/extract.rs)
+/// for a working implementation.
+pub trait Extract<T>: Provider
+where
+    Self::Error: Error,
+{
+    /// Extract data
+    fn extract(
+        &mut self,
+        prompt: &str,
+    ) -> Result<T, Self::Error>;
 }
 
-impl<T: ErrorType + ?Sized> ErrorType for &mut T {
-    type Error = T::Error;
-}
-
-/// Extraction trait
-pub trait Extract<T>: ErrorType {
-    /// Extract data into the deserializable generic T
-    fn extract(&mut self) -> Result<T, Self::Error>;
+impl<C, T> Extract<T> for &mut C
+where
+    C: Extract<T> + ?Sized,
+    C::Error: Error,
+{
+    fn extract(
+        &mut self,
+        prompt: &str,
+    ) -> Result<T, Self::Error> {
+        C::extract(self, prompt)
+    }
 }
