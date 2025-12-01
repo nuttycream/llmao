@@ -27,6 +27,12 @@ const SCHEMA: &str = r#"
 }
 "#;
 
+#[derive(serde::Deserialize)]
+struct User {
+    username: String,
+    email: String,
+}
+
 #[derive(Debug)]
 pub enum ProviderError {
     HttpError(ureq::Error),
@@ -114,14 +120,11 @@ impl Provider for OpenAI {
     type Error = ProviderError;
 }
 
-impl<T> Extract<T> for OpenAI
-where
-    T: for<'de> serde::Deserialize<'de>,
-{
+impl Extract<User> for OpenAI {
     fn extract(
         &mut self,
         prompt: &str,
-    ) -> Result<T, Self::Error> {
+    ) -> Result<User, Self::Error> {
         let schema: serde_json::Value =
             serde_json::from_str(SCHEMA)?;
 
@@ -166,16 +169,11 @@ where
 
         println!("content:\n{:#?}", content);
 
-        let extracted: T = serde_json::from_str(content)?;
+        let extracted: User =
+            serde_json::from_str(content)?;
 
         Ok(extracted)
     }
-}
-
-#[derive(serde::Deserialize)]
-struct User {
-    username: String,
-    email: String,
 }
 
 fn main() -> Result<(), ProviderError> {
@@ -189,7 +187,7 @@ fn main() -> Result<(), ProviderError> {
         model.to_owned(),
     );
 
-    let user: User = openai
+    let user = openai
         .extract("Set the username field to: nutty\nSet the email field to llmao@email.com")?;
 
     println!("Username: {}", user.username);
