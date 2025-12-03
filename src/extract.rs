@@ -58,10 +58,15 @@ pub trait Extract<T>: Provider
 where
     Self::Error: Error,
 {
-    /// Extract data
+    type Prompt;
+    type Content;
+
+    /// Extract data from supplied content
+    ///
     fn extract(
         &mut self,
-        prompt: &str,
+        prompt: Self::Prompt,
+        content: Self::Content,
     ) -> Result<T, Self::Error>;
 }
 
@@ -70,10 +75,14 @@ where
     C: Extract<T> + ?Sized,
     C::Error: Error,
 {
+    type Prompt = C::Prompt;
+    type Content = C::Content;
+
     fn extract(
         &mut self,
-        prompt: &str,
+        prompt: Self::Prompt,
+        content: Self::Content,
     ) -> Result<T, Self::Error> {
-        C::extract(self, prompt)
+        C::extract(self, prompt, content)
     }
 }
