@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use llmao::{
     Provider,
     extract::{Error, ErrorKind, Extract},
@@ -121,9 +122,13 @@ impl Provider for OpenAI {
 }
 
 impl Extract<User> for OpenAI {
+    type Prompt = &'static str;
+    type Content = &'static str;
+
     fn extract(
         &mut self,
         prompt: &str,
+        content: &str,
     ) -> Result<User, Self::Error> {
         let schema: serde_json::Value =
             serde_json::from_str(SCHEMA)?;
@@ -134,14 +139,20 @@ impl Extract<User> for OpenAI {
             "model": self.model,
             "input": [
                 {
-                    "role": "user",
+                    "role": "system",
                     "content": prompt
+                },
+                {
+                    "role": "user",
+                    "content": content
                 }
             ],
             "text": {
                 "format": schema
             }
         });
+
+        //println!("request_body: {:#}", request_body);
 
         // create the actual HTTP request using ureq and
         // read the response as json
@@ -177,6 +188,7 @@ impl Extract<User> for OpenAI {
 }
 
 fn main() -> Result<(), ProviderError> {
+    dotenv().ok();
     let api_key = std::env::var("OPENAI_API_KEY").unwrap();
     let base_url = "https://api.openai.com/v1/responses";
     let model = "gpt-5-nano";
@@ -187,8 +199,10 @@ fn main() -> Result<(), ProviderError> {
         model.to_owned(),
     );
 
-    let user = openai
-        .extract("Set the username field to: nutty\nSet the email field to llmao@email.com")?;
+    let user = openai.extract(
+        "Extract the content into the User schema",
+        "username: crustacean\nemail: llmao@email.com",
+    )?;
 
     println!("Username: {}", user.username);
     println!("Email: {}", user.email);
