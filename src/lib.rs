@@ -12,6 +12,9 @@ pub mod params;
 /// Ideally, this would include Network/HTTPS requests and
 /// Provider specific errors.
 pub trait Provider {
+    /// Core Provider error
+    ///
+    /// This is the only type that a provider implementor is required
     type Error;
 }
 
