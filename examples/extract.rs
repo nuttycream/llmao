@@ -199,10 +199,13 @@ fn main() -> Result<(), ProviderError> {
         model.to_owned(),
     );
 
-    let user = openai.extract(
+    let user = match openai.extract(
         "Extract the content into the User schema",
         "username: crustacean\nemail: llmao@email.com",
-    )?;
+    ) {
+        Ok(u) => u,
+        Err(e) => panic!("{}", e.kind()),
+    };
 
     println!("Username: {}", user.username);
     println!("Email: {}", user.email);
