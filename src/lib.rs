@@ -2,8 +2,9 @@
 
 /// Extract module - used for structured outputs or tool calling
 pub mod extract;
-/// Params module
-pub mod params;
+
+/// Chat module - used for simple prompting
+pub mod chat;
 
 /// Core Provider trait
 ///
@@ -13,8 +14,6 @@ pub mod params;
 /// Provider specific errors.
 pub trait Provider {
     /// Core Provider error
-    ///
-    /// This is the only type that a provider implementor is required
     type Error;
 }
 
