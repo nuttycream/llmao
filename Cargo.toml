@@ -1,7 +1,7 @@
 [package]
 name = "llmao"
 description = "Large Language Model API Ops, an abstraction layer for interfacing with different LLM providers"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2024"
 readme = "README.md"
 license-file = "LICENSE"
